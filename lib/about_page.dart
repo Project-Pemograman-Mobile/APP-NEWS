@@ -12,7 +12,7 @@ class AboutPage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade600, Colors.blue.shade900],
+            colors: [Color.fromARGB(50, 1, 8, 14), Colors.blue.shade900],
           ),
         ),
         child: Center(
@@ -31,7 +31,7 @@ class AboutPage extends StatelessWidget {
                     radius: 60,
                     backgroundColor: Colors.transparent,
                     backgroundImage: AssetImage(
-                        'assets/app_logo.png'), // Ganti dengan path gambar logo aplikasi
+                        'assets/logo.png'), // Ganti dengan path gambar logo aplikasi
                   ),
                 ),
                 SizedBox(height: 20),
@@ -49,7 +49,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  '© 2024 Your Company',
+                  'Copyright by Rizki Saputra & Zhillan Faza',
                   style: TextStyle(fontSize: 16, color: Colors.white70),
                 ),
               ],

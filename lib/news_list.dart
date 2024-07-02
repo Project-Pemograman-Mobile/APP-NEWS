@@ -4,8 +4,9 @@ import 'package:share/share.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'news_service.dart';
 import 'news_model.dart';
-import 'settings_page.dart'; // Import halaman SettingsPage
-import 'about_page.dart'; // Import halaman AboutPage
+import 'settings_page.dart'; 
+import 'about_page.dart'; 
+import 'login_page.dart';
 
 class NewsList extends StatefulWidget {
   @override
@@ -105,16 +106,19 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'settings') {
-                // Navigasi ke halaman SettingsPage
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingsPage()),
                 );
               } else if (value == 'about') {
-                // Navigasi ke halaman AboutPage
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AboutPage()),
+                );
+              } else if (value == 'logout') {
+                Navigator.push( 
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               }
             },
@@ -133,8 +137,16 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
                   title: Text('About'),
                 ),
               ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Log Out'),
+                ),
+              ),
             ],
           ),
+
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -179,16 +191,20 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
+                FadeInImage.assetNetwork(
+                  placeholder: 'assets/placeholder_image.png',
+                  image: _newsList[index].imageUrl,
+                  fit: BoxFit.cover,
                   height: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: _newsList[index].imageUrl.isNotEmpty
-                          ? NetworkImage(_newsList[index].imageUrl)
-                          : AssetImage('assets/placeholder_image.png'),
+                  width: double.infinity,
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/placeholder_image.png',
                       fit: BoxFit.cover,
-                    ),
-                  ),
+                      height: 150,
+                      width: double.infinity,
+                    );
+                  },
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),
@@ -267,14 +283,20 @@ class NewsDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
+            FadeInImage.assetNetwork(
+              placeholder: 'assets/placeholder_image.png',
+              image: news.imageUrl,
+              fit: BoxFit.cover,
               height: 200,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: news.imageUrl.isNotEmpty ? NetworkImage(news.imageUrl) : AssetImage('assets/placeholder_image.png'),
+              width: double.infinity,
+              imageErrorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/placeholder_image.png',
                   fit: BoxFit.cover,
-                ),
-              ),
+                  height: 200,
+                  width: double.infinity,
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -290,6 +312,7 @@ class NewsDetail extends StatelessWidget {
                     onPressed: () => _launchURL(news.url),
                     child: Text('Read more'),
                   ),
+                  
                 ],
               ),
             ),
