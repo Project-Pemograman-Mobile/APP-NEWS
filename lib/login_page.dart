@@ -57,78 +57,102 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome to News App'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.contain,
-                width: double.infinity,
-                height: 200,
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Welcome to News App',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              obscureText: _obscurePassword,
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => loginUser(context),
-              child: const Text('Login'),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: RichText(
-                text: TextSpan(
-                  text: 'Don\'t have an account? ',
-                  style: TextStyle(color: Colors.white),
-                  children: [
-                    TextSpan(
-                      text: 'Register here',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
+                SizedBox(height: 30),
+                Container(
+                  alignment: Alignment.center,
+                  child: Image.asset(
+                    'assets/logo.png',
+                    fit: BoxFit.contain,
+                    width: 150,
+                    height: 150,
+                  ),
+                ),
+                SizedBox(height: 30),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => RegistrationPage()),
-                          );
-                        },
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
-                  ],
+                  ),
+                  obscureText: _obscurePassword,
                 ),
-              ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () => loginUser(context),
+                  child: const Text('Login'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Don\'t have an account? ',
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: 'Register here',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegistrationPage()),
+                              );
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
