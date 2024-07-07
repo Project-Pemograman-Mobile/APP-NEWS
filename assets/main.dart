@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/login_page.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:news_app/splash_screen.dart';
-
-import 'firebase_options.dart';
 
 
-void main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-); 
-  runApp(MyApp());}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -19,7 +11,7 @@ class MyApp extends StatelessWidget {
       title: 'News App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        brightness: Brightness.light, 
+        brightness: Brightness.light, // Mengatur tema awal ke light
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       darkTheme: ThemeData(
@@ -27,10 +19,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       themeMode:
-          ThemeMode.system, 
-      home: SplashScreen(
-        child: LoginPage(),
-      ),
+          ThemeMode.system, // Menggunakan tema yang disesuaikan dengan sistem
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }

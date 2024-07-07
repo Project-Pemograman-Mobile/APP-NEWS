@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
@@ -8,7 +7,6 @@ import 'news_model.dart';
 import 'settings_page.dart'; 
 import 'about_page.dart'; 
 import 'login_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewsList extends StatefulWidget {
   @override
@@ -19,17 +17,15 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
   late Future<List<News>> futureNews;
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
   List<News> _newsList = [];
-  List<Bookmark> _bookmarks = [];
+  final List<Bookmark> _bookmarks = [];
   late TabController _tabController;
   final List<String> _categories = ['business', 'entertainment', 'health', 'science', 'sports', 'technology'];
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _categories.length, vsync: this);
     _loadNews(category: _categories.first); // Load news for the first category initially
-    _loadBookmarks();
   }
 
   void _loadNews({required String category}) async {
@@ -38,20 +34,6 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
       _newsList = newsList;
     });
     _refreshController.refreshCompleted();
-  }
-
-  void _loadBookmarks() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      var bookmarks = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('bookmarks')
-          .get();
-      setState(() {
-        _bookmarks = bookmarks.docs.map((doc) => Bookmark.fromFirestore(doc)).toList();
-      });
-    }
   }
 
   void _onRefresh() async {
@@ -69,44 +51,23 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
     }
   }
 
-  void _addToBookmarks(News news) async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      var bookmark = Bookmark(
+  void _addToBookmarks(News news) {
+    setState(() {
+      _bookmarks.add(Bookmark(
         title: news.title,
         description: news.description,
         imageUrl: news.imageUrl,
         url: news.url,
-      );
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('bookmarks')
-          .add(bookmark.toFirestore());
-      setState(() {
-        _bookmarks.add(bookmark);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article bookmarked')));
-    }
+      ));
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article bookmarked')));
   }
 
-  void _removeFromBookmarks(News news) async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      var bookmarkQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('bookmarks')
-          .where('url', isEqualTo: news.url)
-          .get();
-      for (var doc in bookmarkQuery.docs) {
-        await doc.reference.delete();
-      }
-      setState(() {
-        _bookmarks.removeWhere((bookmark) => bookmark.url == news.url);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article removed from bookmarks')));
-    }
+  void _removeFromBookmarks(News news) {
+    setState(() {
+      _bookmarks.removeWhere((bookmark) => bookmark.url == news.url);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article removed from bookmarks')));
   }
 
   bool isBookmarked(News news) {
@@ -124,7 +85,6 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
     return Scaffold(
       appBar: AppBar(
         title: Text('News App'),
-        automaticallyImplyLeading: false, // Disable back button
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -156,11 +116,9 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
                   MaterialPageRoute(builder: (context) => AboutPage()),
                 );
               } else if (value == 'logout') {
-                _auth.signOut();
-                Navigator.pushAndRemoveUntil(
+                Navigator.push( 
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
-                  (Route<dynamic> route) => false,
                 );
               }
             },
@@ -270,7 +228,7 @@ class _NewsListState extends State<NewsList> with SingleTickerProviderStateMixin
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            icon: Icon(isBookmarked(_newsList[index]) ? Icons.bookmark : Icons.bookmark_border),
+                            icon: Icon(Icons.bookmark),
                             onPressed: () {
                               if (!isBookmarked(_newsList[index])) {
                                 _addToBookmarks(_newsList[index]);
@@ -471,23 +429,4 @@ class Bookmark {
     required this.imageUrl,
     required this.url,
   });
-
-  factory Bookmark.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map;
-    return Bookmark(
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      imageUrl: data['imageUrl'] ?? '',
-      url: data['url'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'title': title,
-      'description': description,
-      'imageUrl': imageUrl,
-      'url': url,
-    };
-  }
 }
